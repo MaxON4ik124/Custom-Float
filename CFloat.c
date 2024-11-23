@@ -412,6 +412,9 @@ CFloat divide(CFloat val1, CFloat val2)
     int resind = 0;
     int zind = 0;
     int prepare = 1;
+    int specoffs = 1;
+    if(dividend.mantissa[0] >= divisor.mantissa[0])
+        specoffs = 0;
     for(int i = 0;i < SIZE;i++)
     {
         remainder = multiply(remainder, convert_toCF(10.0));
@@ -431,7 +434,7 @@ CFloat divide(CFloat val1, CFloat val2)
         }
         else
         {
-            if(prepare == 0)
+            if(prepare <= 0)
                 zind++;
             if(zind > 0)
             {
@@ -442,7 +445,7 @@ CFloat divide(CFloat val1, CFloat val2)
     }
     if(higher(divisor, dividend))
     {
-        result = offset(result, get_size(divisor)-get_size(dividend), 1);
+        result = offset(result, divisor.exponent-dividend.exponent+specoffs, 1);
         result.exponent = 1;
     }
     if(val1.sign == val2.sign)
