@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#define SIZE 5000
-#define ACCURACY 10
+#define SIZE 500
+#define ACCURACY 5
+#define PI 3.14159265358979323846
 typedef struct
 {
     short mantissa[SIZE];
@@ -179,6 +180,8 @@ CFloat get_cfloat()
         else
             result.mantissa[i - minus - dot] = number[i] - '0';
     }
+    if(dot == 0)
+        result.exponent = len - minus + 1;
     return result;
 }
 CFloat plus(CFloat val1, CFloat val2)
@@ -415,6 +418,8 @@ CFloat divide(CFloat val1, CFloat val2)
     int specoffs = 1;
     if(dividend.mantissa[0] >= divisor.mantissa[0])
         specoffs = 0;
+    if(dividend.mantissa[0] == 0 && specoffs == 1)
+        specoffs = 2;
     for(int i = 0;i < SIZE;i++)
     {
         remainder = multiply(remainder, convert_toCF(10.0));
@@ -453,8 +458,4 @@ CFloat divide(CFloat val1, CFloat val2)
     else
         result.sign = 1;
     return result;
-}
-int main()
-{
-    print_cfloat(factorial(1000));
 }
