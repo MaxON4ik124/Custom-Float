@@ -459,3 +459,5 @@ CFloat divide(CFloat val1, CFloat val2)
         result.sign = 1;
     return result;
 }
+int main()
+{}
