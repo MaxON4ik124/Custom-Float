@@ -405,9 +405,7 @@ CFloat subCFloat(CFloat val, int begin, int end)
 CFloat divide(CFloat val1, CFloat val2)
 {
     CFloat remainder = toZero();
-    CFloat Zero = remainder;
-    CFloat result;
-    for(int i = 0;i < SIZE;i++) result.mantissa[i] = 0;
+    CFloat result = toZero();
     CFloat dividend = val1;
     CFloat divisor = val2;
     divisor.exponent = get_size(val2);
@@ -416,10 +414,13 @@ CFloat divide(CFloat val1, CFloat val2)
     int zind = 0;
     int prepare = 1;
     int specoffs = 1;
-    if(dividend.mantissa[0] >= divisor.mantissa[0])
+    int leadzeros = 0;
+    int finddiff = 0;
+    while(dividend.mantissa[leadzeros] == 0) leadzeros++;
+    while(dividend.mantissa[leadzeros + finddiff] == divisor.mantissa[finddiff]) 
+        finddiff++;
+    if(dividend.mantissa[leadzeros + finddiff] >= divisor.mantissa[finddiff])
         specoffs = 0;
-    if(dividend.mantissa[0] == 0 && specoffs == 1)
-        specoffs = 2;
     for(int i = 0;i < SIZE;i++)
     {
         remainder = multiply(remainder, convert_toCF(10.0));
@@ -430,7 +431,7 @@ CFloat divide(CFloat val1, CFloat val2)
         {
             zind = 0;
             prepare = 0;
-            while(higher(remainder, divisor) == 1)
+            while(higher(remainder, divisor))
             {
                 remainder = minus(remainder, divisor);
                 result.mantissa[resind]++;
@@ -448,6 +449,17 @@ CFloat divide(CFloat val1, CFloat val2)
             }
         }
     }
+    if(higher(divisor, dividend))
+    {
+        result = offset(result, divisor.exponent-dividend.exponent+specoffs+leadzeros, 1);
+        result.exponent = 1;
+    }
+    if(val1.sign == val2.sign)
+        result.sign = 0;
+    else
+        result.sign = 1;
+    return result;
+}
     if(higher(divisor, dividend))
     {
         result = offset(result, divisor.exponent-dividend.exponent+specoffs, 1);
